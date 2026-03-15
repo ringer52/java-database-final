@@ -25,16 +25,7 @@ public class StoreController {
     @Autowired
     private OrderService orderService;
 
-    @PostMapping
-    public Map<String, String> addStore(@RequestBody Store store) {
-        Map<String, String> response = new HashMap<>();
-        Store savedStore = storeRepository.save(store);
-        response.put("message", "Store created successfully with ID: " + savedStore.getId());
-        return response;
-    }
-
-    // GET endpoint to validate store existence at /store/validate/store/{id}
-    @GetMapping("validate/store/{id}")
+    @GetMapping("/validate/{id}")
     public boolean validateStore(@PathVariable Long id) {
         Optional<Store> store = storeRepository.findById(id);
         if (store.isPresent()) {
@@ -43,7 +34,6 @@ public class StoreController {
         return false;
     }
 
-    // placeOrder method with try-catch block for exception handling
     @PostMapping("/placeOrder")
     public Map<String, String> placeOrder(@RequestBody PlaceOrderRequestDTO placeOrderRequest) {
         Map<String, String> response = new HashMap<>();
@@ -53,6 +43,14 @@ public class StoreController {
         } catch (Exception e) {
             response.put("Error", e.getMessage());
         }
+        return response;
+    }
+
+    @PostMapping
+    public Map<String, String> addStore(@RequestBody Store store) {
+        Map<String, String> response = new HashMap<>();
+        Store savedStore = storeRepository.save(store);
+        response.put("message", "Store created successfully with ID: " + savedStore.getId());
         return response;
     }
 }
