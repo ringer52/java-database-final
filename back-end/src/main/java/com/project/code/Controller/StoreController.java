@@ -25,7 +25,7 @@ public class StoreController {
     @Autowired
     private OrderService orderService;
 
-    @GetMapping("/validate/{id}")
+    @GetMapping("/validate/store/{id}")
     public boolean validateStore(@PathVariable Long id) {
         Optional<Store> store = storeRepository.findById(id);
         if (store.isPresent()) {
