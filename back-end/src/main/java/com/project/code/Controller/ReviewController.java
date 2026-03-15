@@ -1,5 +1,19 @@
 package com.project.code.Controller;
 
+import com.project.code.Model.Customer;
+import com.project.code.Model.Review;
+import com.project.code.Repo.CustomerRepository;
+import com.project.code.Repo.ReviewRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/reviews")
 public class ReviewController {
@@ -10,7 +24,6 @@ public class ReviewController {
     @Autowired
     private CustomerRepository customerRepository;
 
-    // GET /reviews - returns all reviews using reviewRepository.findAll()
     @GetMapping
     public Map<String, Object> getAllReviews() {
         Map<String, Object> response = new HashMap<>();
@@ -19,16 +32,13 @@ public class ReviewController {
         return response;
     }
 
-    // GET /reviews/{storeId}/{productId} - fetches reviews and includes customer names
     @GetMapping("/{storeId}/{productId}")
     public Map<String, Object> getReviews(@PathVariable Long storeId,
                                            @PathVariable Long productId) {
         Map<String, Object> response = new HashMap<>();
 
-        // Fetch all reviews for the specific product in the store
         List<Review> reviews = reviewRepository.findByStoreIdAndProductId(storeId, productId);
 
-        // Build response with comment, rating and customer name
         List<Map<String, Object>> filteredReviews = new ArrayList<>();
 
         for (Review review : reviews) {
@@ -37,7 +47,6 @@ public class ReviewController {
             reviewMap.put("comment", review.getComment());
             reviewMap.put("rating", review.getRating());
 
-            // Fetch customer name using customer ID from the review
             Customer customer = customerRepository.findById(review.getCustomerId());
             if (customer != null) {
                 reviewMap.put("customerName", customer.getName());
@@ -52,4 +61,3 @@ public class ReviewController {
         return response;
     }
 }
-        response.put("
