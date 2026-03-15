@@ -73,3 +73,55 @@ public class ProductController {
 
     @GetMapping("/category/{name}/{category}")
     public Map<String, Object> filterbyCategoryProduct(@PathVariable String name,
+                                                        @PathVariable String category) {
+        Map<String, Object> response = new HashMap<>();
+        List<Product> products;
+        if (name.equals("null")) {
+            products = productRepository.findByCategory(category);
+        } else if (category.equals("null")) {
+            products = productRepository.findProductBySubName(name);
+        } else {
+            products = productRepository.findProductBySubNameAndCategory(name, category);
+        }
+        response.put("products", products);
+        return response;
+    }
+
+    @GetMapping
+    public Map<String, Object> listProduct() {
+        Map<String, Object> response = new HashMap<>();
+        List<Product> products = productRepository.findAll();
+        response.put("products", products);
+        return response;
+    }
+
+    @GetMapping("filter/{category}/{storeid}")
+    public Map<String, Object> getProductbyCategoryAndStoreId(@PathVariable String category,
+                                                               @PathVariable Long storeid) {
+        Map<String, Object> response = new HashMap<>();
+        List<Product> products = productRepository.findProductByCategory(category, storeid);
+        response.put("product", products);
+        return response;
+    }
+
+    @DeleteMapping("/{id}")
+    public Map<String, String> deleteProduct(@PathVariable Long id) {
+        Map<String, String> response = new HashMap<>();
+        if (!serviceClass.ValidateProductId(id)) {
+            response.put("message", "Product not present in database");
+            return response;
+        }
+        inventoryRepository.deleteByProductId(id);
+        productRepository.deleteById(id);
+        response.put("message", "Product deleted successfully");
+        return response;
+    }
+
+    @GetMapping("/searchProduct/{name}")
+    public Map<String, Object> searchProduct(@PathVariable String name) {
+        Map<String, Object> response = new HashMap<>();
+        List<Product> products = productRepository.findProductBySubName(name);
+        response.put("products", products);
+        return response;
+    }
+}
