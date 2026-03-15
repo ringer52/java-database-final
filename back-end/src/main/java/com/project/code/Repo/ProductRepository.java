@@ -1,53 +1,64 @@
 package com.project.code.Repo;
 
+import com.project.code.Model.Product;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+import java.util.List;
 
-public interface ProductRepository {
-// 1. Add the repository interface:
-//    - Extend JpaRepository<Product, Long> to inherit basic CRUD functionality.
-//    - This allows the repository to perform operations like save, delete, update, and find without having to implement these methods manually.
+@Repository
+public interface ProductRepository extends JpaRepository<Product, Long> {
 
-// Example: public interface ProductRepository extends JpaRepository<Product, Long> {}
+    // Find all products
+    List<Product> findAll();
 
-// 2. Add custom query methods:
-//    - **findAll**:
-//      - This method will retrieve all products.
-//      - Return type: List<Product>
+    // Filter products by category
+    List<Product> findByCategory(String category);
 
-// Example: public List<Product> findAll();
+    // Find products within a price range
+    List<Product> findByPriceBetween(Double minPrice, Double maxPrice);
 
-//    - **findByCategory**:
-//      - This method will retrieve products by their category.
-//      - Return type: List<Product>
-//      - Parameter: String category
+    // Find a product by SKU
+    List<Product> findBySku(String sku);
 
-// Example: public List<Product> findByCategory(String category);
+    // Find a product by name
+    Product findByName(String name);
 
-//    - **findByPriceBetween**:
-//      - This method will retrieve products within a price range.
-//      - Return type: List<Product>
-//      - Parameters: Double minPrice, Double maxPrice
+    // Find a product by ID
+    Product findById(Long id);
 
-// Example: public List<Product> findByPriceBetween(Double minPrice, Double maxPrice);
+    // Find products by name pattern for a specific store
+    @Query("SELECT i.product FROM Inventory i WHERE i.store.id = :storeId AND i.product.category = :category")
+    List<Product> findByNameLike(@Param("storeId") Long storeId,
+                                 @Param("pname") String pname);
 
-//    - **findBySku**:
-//      - This method will retrieve a product by its SKU.
-//      - Return type: Product
-//      - Parameter: String sku
+    // Find products by name and category for a specific store
+    @Query("SELECT i.product FROM Inventory i WHERE i.store.id = :storeId AND LOWER(i.product.name) LIKE LOWER(CONCAT('%', :pname, '%')) AND i.product.category = :category")
+    List<Product> findByNameAndCategory(@Param("storeId") Long storeId,
+                                        @Param("pname") String pname,
+                                        @Param("category") String category);
 
-// Example: public Product findBySku(String sku);
+    // Find products by category and store ID
+    @Query("SELECT i.product FROM Inventory i WHERE i.store.id = :storeId AND i.product.category = :category")
+    List<Product> findByCategoryAndStoreId(@Param("storeId") Long storeId,
+                                           @Param("category") String category);
 
-//    - **findByName**:
-//      - This method will retrieve a product by its name.
-//      - Return type: Product
-//      - Parameter: String name
+    // Find products by name pattern ignoring case
+    @Query("SELECT i FROM Product i WHERE LOWER(i.name) LIKE LOWER(CONCAT('%', :pname, '%'))")
+    List<Product> findProductBySubName(@Param("pname") String pname);
 
-// Example: public Product findByName(String name);
+    // Find all products for a specific store
+    @Query("SELECT i.product FROM Inventory i WHERE i.store.id = :storeId")
+    List<Product> findProductsByStoreId(@Param("storeId") Long storeId);
 
-//    - **findByNameLike**:
-//      - This method will retrieve products by a name pattern for a specific store.
-//      - Return type: List<Product>
-//      - Parameters: Long storeId, String pname
-//      - Use @Query annotation to write a custom query.
+    // Find products by category and store ID
+    @Query("SELECT i.product FROM Inventory i WHERE i.product.category = :category and i.store.id = :storeId")
+    List<Product> findProductByCategory(@Param("category") String category,
+                                        @Param("storeId") Long storeId);
 
-
+    // Find products by name pattern and category
+    @Query("SELECT i FROM Product i WHERE LOWER(i.name) LIKE LOWER(CONCAT('%', :pname, '%')) AND i.category = :category")
+    List<Product> findProductBySubNameAndCategory(@Param("pname") String pname,
+                                                  @Param("category") String category);
 }
