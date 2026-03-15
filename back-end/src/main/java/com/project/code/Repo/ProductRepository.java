@@ -1,5 +1,12 @@
 package com.project.code.Repo;
 
+import com.project.code.Model.Product;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
@@ -26,13 +33,13 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByNameLike(@Param("storeId") Long storeId,
                                  @Param("pname") String pname);
 
-    // Find products by name and category for a specific store
+    // Find products by name AND category for a specific store using both storeId and category
     @Query("SELECT i.product FROM Inventory i WHERE i.store.id = :storeId AND LOWER(i.product.name) LIKE LOWER(CONCAT('%', :pname, '%')) AND i.product.category = :category")
     List<Product> findByNameAndCategory(@Param("storeId") Long storeId,
                                         @Param("pname") String pname,
                                         @Param("category") String category);
 
-    // Find products by category and store ID
+    // Find products by category AND storeId - filters using both store ID and category
     @Query("SELECT i.product FROM Inventory i WHERE i.store.id = :storeId AND i.product.category = :category")
     List<Product> findByCategoryAndStoreId(@Param("storeId") Long storeId,
                                            @Param("category") String category);
@@ -41,12 +48,12 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT i FROM Product i WHERE LOWER(i.name) LIKE LOWER(CONCAT('%', :pname, '%'))")
     List<Product> findProductBySubName(@Param("pname") String pname);
 
-    // Find all products for a specific store
+    // Find all products for a specific store using storeId
     @Query("SELECT i.product FROM Inventory i WHERE i.store.id = :storeId")
     List<Product> findProductsByStoreId(@Param("storeId") Long storeId);
 
-    // Find products by category and store ID
-    @Query("SELECT i.product FROM Inventory i WHERE i.product.category = :category and i.store.id = :storeId")
+    // Find products by category AND storeId - filters using both category and store ID
+    @Query("SELECT i.product FROM Inventory i WHERE i.product.category = :category AND i.store.id = :storeId")
     List<Product> findProductByCategory(@Param("category") String category,
                                         @Param("storeId") Long storeId);
 
