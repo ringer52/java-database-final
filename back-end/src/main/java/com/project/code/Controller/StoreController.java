@@ -1,13 +1,5 @@
 package com.project.code.Controller;
 
-import com.project.code.DTO.PlaceOrderRequestDTO;
-import com.project.code.Model.Store;
-import com.project.code.Repo.StoreRepository;
-import com.project.code.Service.OrderService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @RestController
