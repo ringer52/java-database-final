@@ -1,16 +1,5 @@
 package com.project.code.Controller;
 
-import com.project.code.Model.Customer;
-import com.project.code.Model.Review;
-import com.project.code.Repo.CustomerRepository;
-import com.project.code.Repo.ReviewRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 @RestController
 @RequestMapping("/reviews")
 public class ReviewController {
@@ -59,4 +48,8 @@ public class ReviewController {
             filteredReviews.add(reviewMap);
         }
 
+        response.put("reviews", filteredReviews);
+        return response;
+    }
+}
         response.put("
