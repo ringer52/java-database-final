@@ -33,6 +33,40 @@ public class InventoryController {
     @Autowired
     private ServiceClass serviceClass;
 
+    // GET filter/{category}/{name}/{storeid} - filters products with conditional logic
+    @GetMapping("filter/{category}/{name}/{storeid}")
+    public Map<String, Object> getProductName(@PathVariable String category,
+                                               @PathVariable String name,
+                                               @PathVariable Long storeid) {
+        Map<String, Object> response = new HashMap<>();
+        List<Product> products;
+        // Conditional filtering logic based on category and name values
+        if (category.equals("null")) {
+            // Filter by name only when category is null
+            products = productRepository.findByNameLike(storeid, name);
+        } else if (name.equals("null")) {
+            // Filter by category only when name is null
+            products = productRepository.findByCategoryAndStoreId(storeid, category);
+        } else {
+            // Filter by both name and category when both are provided
+            products = productRepository.findByNameAndCategory(storeid, name, category);
+        }
+        response.put("product", products);
+        return response;
+    }
+
+    // GET validate/{quantity}/{storeId}/{productId} - validates available quantity in stock
+    @GetMapping("validate/{quantity}/{storeId}/{productId}")
+    public boolean validateQuantity(@PathVariable Integer quantity,
+                                    @PathVariable Long storeId,
+                                    @PathVariable Long productId) {
+        Inventory inventory = inventoryRepository.findByProductIdAndStoreId(productId, storeId);
+        if (inventory.getStockLevel() >= quantity) {
+            return true;
+        }
+        return false;
+    }
+
     @PutMapping
     public Map<String, String> updateInventory(@RequestBody CombinedRequest combinedRequest) {
         Map<String, String> response = new HashMap<>();
@@ -86,23 +120,6 @@ public class InventoryController {
         return response;
     }
 
-    @GetMapping("filter/{category}/{name}/{storeid}")
-    public Map<String, Object> getProductName(@PathVariable String category,
-                                               @PathVariable String name,
-                                               @PathVariable Long storeid) {
-        Map<String, Object> response = new HashMap<>();
-        List<Product> products;
-        if (category.equals("null")) {
-            products = productRepository.findByNameLike(storeid, name);
-        } else if (name.equals("null")) {
-            products = productRepository.findByCategoryAndStoreId(storeid, category);
-        } else {
-            products = productRepository.findByNameAndCategory(storeid, name, category);
-        }
-        response.put("product", products);
-        return response;
-    }
-
     @GetMapping("search/{name}/{storeId}")
     public Map<String, Object> searchProduct(@PathVariable String name,
                                               @PathVariable Long storeId) {
@@ -122,13 +139,5 @@ public class InventoryController {
         inventoryRepository.deleteByProductId(id);
         response.put("message", "Product deleted successfully");
         return response;
-    }
-
-    @GetMapping("validate/{quantity}/{storeId}/{productId}")
-    public boolean validateQuantity(@PathVariable Integer quantity,
-                                    @PathVariable Long storeId,
-                                    @PathVariable Long productId) {
-        Inventory inventory = inventoryRepository.findByProductIdAndStoreId(productId, storeId);
-        return inventory.getStockLevel() >= quantity;
     }
 }
