@@ -31,6 +31,31 @@ public class ProductController {
     @Autowired
     private InventoryRepository inventoryRepository;
 
+    // GET /product/{id} endpoint - retrieves a product by its ID
+    @GetMapping("/product/{id}")
+    public Map<String, Object> getProductbyId(@PathVariable Long id) {
+        Map<String, Object> response = new HashMap<>();
+        Product product = productRepository.findById(id);
+        response.put("products", product);
+        return response;
+    }
+
+    // DELETE /{id} endpoint - deletes both inventory entries and product by ID
+    @DeleteMapping("/{id}")
+    public Map<String, String> deleteProduct(@PathVariable Long id) {
+        Map<String, String> response = new HashMap<>();
+        if (!serviceClass.ValidateProductId(id)) {
+            response.put("message", "Product not present in database");
+            return response;
+        }
+        // First delete inventory entries due to foreign key constraint
+        inventoryRepository.deleteByProductId(id);
+        // Then delete the product
+        productRepository.deleteById(id);
+        response.put("message", "Product deleted successfully");
+        return response;
+    }
+
     @PostMapping
     public Map<String, String> addProduct(@RequestBody Product product) {
         Map<String, String> response = new HashMap<>();
@@ -46,14 +71,6 @@ public class ProductController {
         } catch (Exception e) {
             response.put("message", "An error occurred: " + e.getMessage());
         }
-        return response;
-    }
-
-    @GetMapping("/product/{id}")
-    public Map<String, Object> getProductbyId(@PathVariable Long id) {
-        Map<String, Object> response = new HashMap<>();
-        Product product = productRepository.findById(id);
-        response.put("products", product);
         return response;
     }
 
@@ -101,19 +118,6 @@ public class ProductController {
         Map<String, Object> response = new HashMap<>();
         List<Product> products = productRepository.findProductByCategory(category, storeid);
         response.put("product", products);
-        return response;
-    }
-
-    @DeleteMapping("/{id}")
-    public Map<String, String> deleteProduct(@PathVariable Long id) {
-        Map<String, String> response = new HashMap<>();
-        if (!serviceClass.ValidateProductId(id)) {
-            response.put("message", "Product not present in database");
-            return response;
-        }
-        inventoryRepository.deleteByProductId(id);
-        productRepository.deleteById(id);
-        response.put("message", "Product deleted successfully");
         return response;
     }
 
