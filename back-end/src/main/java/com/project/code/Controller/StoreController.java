@@ -33,12 +33,17 @@ public class StoreController {
         return response;
     }
 
-    @GetMapping("validate/{storeId}")
-    public boolean validateStore(@PathVariable Long storeId) {
-        Optional<Store> store = storeRepository.findById(storeId);
-        return store.isPresent();
+    // GET endpoint to validate store existence at /store/validate/store/{id}
+    @GetMapping("validate/store/{id}")
+    public boolean validateStore(@PathVariable Long id) {
+        Optional<Store> store = storeRepository.findById(id);
+        if (store.isPresent()) {
+            return true;
+        }
+        return false;
     }
 
+    // placeOrder method with try-catch block for exception handling
     @PostMapping("/placeOrder")
     public Map<String, String> placeOrder(@RequestBody PlaceOrderRequestDTO placeOrderRequest) {
         Map<String, String> response = new HashMap<>();
