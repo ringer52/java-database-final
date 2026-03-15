@@ -1,13 +1,5 @@
 package com.project.code.Service;
 
-import com.project.code.Model.*;
-import com.project.code.Repo.*;
-import com.project.code.DTO.PlaceOrderRequestDTO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
-import java.util.Optional;
-
 @Service
 public class OrderService {
 
