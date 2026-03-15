@@ -1,5 +1,15 @@
 package com.project.code.Model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotNull;
+import java.util.List;
+
 @Entity
 public class Customer {
 
@@ -19,8 +29,6 @@ public class Customer {
     @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<OrderDetails> orders;
-
-    // Getters and Setters
 
     public long getId() { return id; }
     public void setId(long id) { this.id = id; }
