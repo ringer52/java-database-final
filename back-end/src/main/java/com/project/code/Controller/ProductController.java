@@ -31,8 +31,8 @@ public class ProductController {
     @Autowired
     private InventoryRepository inventoryRepository;
 
-    // GET /product/{id} endpoint - retrieves a product by its ID
-    @GetMapping("/product/{id}")
+    // GET /product/{id} - retrieves a product by its ID
+    @GetMapping("/{id}")
     public Map<String, Object> getProductbyId(@PathVariable Long id) {
         Map<String, Object> response = new HashMap<>();
         Product product = productRepository.findById(id);
@@ -40,7 +40,7 @@ public class ProductController {
         return response;
     }
 
-    // DELETE /{id} endpoint - deletes both inventory entries and product by ID
+    // DELETE /product/{id} - deletes both inventory entries and product
     @DeleteMapping("/{id}")
     public Map<String, String> deleteProduct(@PathVariable Long id) {
         Map<String, String> response = new HashMap<>();
@@ -48,9 +48,7 @@ public class ProductController {
             response.put("message", "Product not present in database");
             return response;
         }
-        // First delete inventory entries due to foreign key constraint
         inventoryRepository.deleteByProductId(id);
-        // Then delete the product
         productRepository.deleteById(id);
         response.put("message", "Product deleted successfully");
         return response;
